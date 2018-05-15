@@ -13,13 +13,18 @@
 <body>
 
   <div id="app">
+
+    <h2>Once and Vue Methods</h2>
+
     <input type="text" v-on:input="changeTitle">
     <p v-once>Once title: {{ title }}</p>
     <p>Dynamic Title: {{ title }}</p>
-    <p>Click
-      <a v-bind:href="link" target="blank">here!</a>
+    <p>Click <a v-bind:href="link" target="blank">here!</a>
     </p>
+
     <hr>
+    <h2>Events</h2>
+
     <p v-html="finishedLink"></p>
     <hr>
     <p>DOM Event Triggered: {{ event }}</p>
@@ -27,16 +32,48 @@
     <button v-on:click="incrementCounter($event, 2)">
       Increment counter!
     </button>
+
     <hr>
+    <h2>Event Modifiers</h2>
+
     <p v-on:mousemove="updateCoordinates">
       Coordinates: {{x}} / {{ y }}
       <!-- <span v-on:mousemove="dummy">DEAD SPOT</span> -->
       <span v-on:mousemove.stop>DEAD STOP</span>
-      <!-- Event Modifiers -->
     </p>
     <input type="text" v-on:keyup.enter.space="alertMe">
-    <!-- Key Events Modifier -->
+
     <hr>
+    <h2>Two-way-binding</h2>
+
+    <input type="text" v-model="name">
+    <p>{{ name }}</p>
+
+    <hr>
+    <h2>Computed</h2>
+
+    <div>
+      <p>Counter related to the computed output: {{ counter }}</p>
+      <button v-on:click="counter--"><</button>
+      <button v-on:click="counter++">></button>
+      <p>Counter unralated to the computed output: {{ secondCounter }}</p>
+      <button v-on:click="secondCounter--"><</button>
+      <button v-on:click="secondCounter++">></button>
+      <p>result(): {{ result() }} | This method will be called every render.</p>
+      <p>output: {{ output }} | This method its linked with counter and it will be called just if the counter change.</p>
+    </div>
+
+    <hr>
+    <h2>Watch</h2>
+
+    <hr>
+    <h2>Shortcuts</h2>
+
+    <div>
+      <button @click="counter++">Increment!</button> <!-- instead of v-on -->
+      <a :href="link"></a> <!-- instead of v-bind-->
+    </div>
+
   </div>
 
   <script>
@@ -48,18 +85,25 @@
        or stopImmediatePropagation(), either of which terminates propagation at once.
     */
 
-    Vue.config.devtools = true;
-
     new Vue({
       el: '#app',
       data: {
+        name: "Igor",
         event: "No events triggered yet.",
         counter: 0,
+        secondCounter: 0,
         title: 'Hello World!',
         link: 'https://google.com',
         finishedLink: '<a href="https://google.com">Google</a>',
         x: 0,
-        y: 0
+        y: 0,
+        log: ""
+      },
+      computed: {
+        output: function() {
+          console.log('output: Computed!');
+          return this.counter > 5 ? 'Greater than 5' : 'Smaller than 5';
+        }
       },
       methods: {
         alertMe: function () {
@@ -82,6 +126,17 @@
         },
         dummy: function (e) {
           e.stopPropagation();
+        },
+        result: function() {
+          console.log('result: Method!');
+          return this.counter > 5 ? 'Greater than 5' : 'Smaller than 5';
+        }
+      },
+      watch: {
+        counter: function(value) {
+          setTimeout(() => {
+            this.counter = 0;
+          }, 2000);
         }
       }
     });
