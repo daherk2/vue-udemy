@@ -49,6 +49,22 @@
     <input type="text" v-model="name">
     <p>{{ name }}</p>
 
+    <!-- Computed Properties
+         You can data-bind to computed properties in templates just like normal property.
+         Vue is aware that vm.someProp depends on vm.someOtherProp, so it will update
+         any binding that depend on vm.someOtherProp when vm.someProp changes. And the best
+         part is that we've created this dependency relationship declaretively: the computed
+         getter function has no side effects, which makes it easier to test and understand.
+
+         Computed Caching and Methods
+         Instead of a computed property, we can define the same function as a method instead. For
+         the end result, the two approaches are indeed exactly the same. However, the diffence
+         is that computed properties are cached based on their dependencies. A computed property
+         will only re-evaluate when some of its dependencies have changed. This means as long as
+         someOtherProp has not changed, multiple access to the someProp computed property will
+         immediately return the previously computed result without having to the run function again.
+    -->
+
     <hr>
     <h2>Computed</h2>
 
@@ -74,6 +90,28 @@
       <a :href="link"></a> <!-- instead of v-bind-->
     </div>
 
+    <hr>
+    <h2>Styles and Classes</h2>
+    <div>
+        <!-- Vue.js will merge these two classes below -->
+        <div class="demo" @click="attachRed = !attachRed" :class="divClasses"></div>
+        <div class="demo" :class="{ red: attachRed }"></div>
+        <div class="demo" :class="divClasses"></div>
+        <div class="demo" :class="color"></div>
+        <div class="demo" :class="[color, { red: attachRed }]"></div>
+        <p>Color:</p>
+        <input type="text" v-model="color">
+      </div>
+
+      <div>
+        <div class="demo" :style="{ backgroundColor: color }"></div>
+        <div class="demo" :style="{ 'background-color': color }"></div>
+        <div class="demo" :style="myStyle"></div>
+        <div class="demo" :style="[ myStyle, { height: `${ width } px` } ]"></div>
+        <p>Width:</p>
+        <input type="text" v-model="width">
+      </div>
+
   </div>
 
   <script>
@@ -97,43 +135,58 @@
         finishedLink: '<a href="https://google.com">Google</a>',
         x: 0,
         y: 0,
-        log: ""
+        log: "",
+        attachRed: false,
+        color: 'green',
+        width: 100
       },
       computed: {
-        output: function() {
+        output() {
           console.log('output: Computed!');
           return this.counter > 5 ? 'Greater than 5' : 'Smaller than 5';
+        },
+        divClasses() {
+          return {
+            red: this.attachRed,
+            blue: !this.attachRed
+          };
+        },
+        myStyle() {
+          return {
+            backgroundColor: this.color,
+            width: this.width + 'px'
+          };
         }
       },
       methods: {
-        alertMe: function () {
+        alertMe() {
           alert('Alert');
         },
-        changeTitle: function (e) {
+        changeTitle(e) {
           this.event = e;
           this.title = e.target.value;
         },
-        sayHello: function () {
+        sayHello() {
           this.title = "Hello!";
           return 'Hello!';
         },
-        incrementCounter: function (e, step) {
+        incrementCounter(e, step) {
           this.counter += step || 1;
         },
-        updateCoordinates: function (e) {
+        updateCoordinates(e) {
           this.x = e.clientX;
           this.y = e.y;
         },
-        dummy: function (e) {
+        dummy(e) {
           e.stopPropagation();
         },
-        result: function() {
+        result() {
           console.log('result: Method!');
           return this.counter > 5 ? 'Greater than 5' : 'Smaller than 5';
         }
       },
       watch: {
-        counter: function(value) {
+        counter(value) {
           setTimeout(() => {
             this.counter = 0;
           }, 2000);
@@ -141,6 +194,28 @@
       }
     });
   </script>
+
+<style>
+    .demo {
+      width: 100px;
+      height: 100px;
+      background-color: gray;
+      display: inline-block;
+      margin: 10px;
+    }
+
+    .red {
+      background-color: red;
+    }
+
+    .blue {
+      background-color: blue;
+    }
+
+    .green {
+      background-color: green;
+    }
+  </style>
 
 </body>
 

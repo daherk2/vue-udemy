@@ -41,12 +41,12 @@
         duration: 0
       },
       computed: {
-        result: function () {
+        result() {
           return this.value <= 37 ? 'not there yet' : 'done';
         }
       },
       watch: {
-        result: function () {
+        result() {
           setTimeout(() => {
             this.value = 0;
           }, this.duration);
