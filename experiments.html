@@ -93,24 +93,89 @@
     <hr>
     <h2>Styles and Classes</h2>
     <div>
-        <!-- Vue.js will merge these two classes below -->
-        <div class="demo" @click="attachRed = !attachRed" :class="divClasses"></div>
-        <div class="demo" :class="{ red: attachRed }"></div>
-        <div class="demo" :class="divClasses"></div>
-        <div class="demo" :class="color"></div>
-        <div class="demo" :class="[color, { red: attachRed }]"></div>
-        <p>Color:</p>
-        <input type="text" v-model="color">
-      </div>
+      <!-- Vue.js will merge these two classes below -->
+      <div class="demo" @click="attachRed = !attachRed" :class="divClasses"></div>
+      <div class="demo" :class="{ red: attachRed }"></div>
+      <div class="demo" :class="divClasses"></div>
+      <div class="demo" :class="color"></div>
+      <div class="demo" :class="[color, { red: attachRed }]"></div>
+      <p>Color:</p>
+      <input type="text" v-model="color">
+    </div>
+
+    <div>
+      <div class="demo" :style="{ backgroundColor: color }"></div>
+      <div class="demo" :style="{ 'background-color': color }"></div>
+      <div class="demo" :style="myStyle"></div>
+      <div class="demo" :style="[ myStyle, { height: `${ width } px` } ]"></div>
+      <p>Width:</p>
+      <input type="text" v-model="width">
+    </div>
+
+    <hr>
+    <h2>Conditionals</h2>
+    <div>
+      <p>Using v-if v-else and v-show</p>
+      <!-- v-if removes completely the element from the dom -->
+      <p v-if="show">if <span>!</span></p>
+      <p v-else>else!</p>
+
+      <!-- HTML5 template tag (it doesnt get rendered in the dom)
+           can avoid div side effects -->
+      <template v-if="show">
+        <p>Inside a template!</p>
+      </template>
+
+      <!-- Element will be there but it will be hidden -->
+      <p v-show="show"></p>
+
+      <button @click="show = !show">Switch label</button>
+    </div>
+
+    <div>
+      <p>List using v-for</p>
+      <ul>
+          <!-- Vue will update (if something changed) accordingly to the position on the array
+               that something changed, if does not keep track of the specific element that you
+               created, it will only patch it in the second position. But!
+               If you wanna be super safe and wanna make sure that Vue is not only aware of the position
+               but the actual list item in which your value sits you need to assign a key
+
+               Behind the scenes you are safe, Vue not only stores the position of the element but
+               the element itself which means that if you need to reorder them it will take the actual
+               not just override inside the positions like inside the array -->
+          <li v-for="(ingredient, i) in ingredients" :key="ingredient">{{ ingredient }} ({{ i }})</li>
+      </ul>
+      <ul>
+        <li v-for="(ingredient, i) in ingredients">{{ ingredient }} ({{ i }})</li>
+      </ul>
 
       <div>
-        <div class="demo" :style="{ backgroundColor: color }"></div>
-        <div class="demo" :style="{ 'background-color': color }"></div>
-        <div class="demo" :style="myStyle"></div>
-        <div class="demo" :style="[ myStyle, { height: `${ width } px` } ]"></div>
-        <p>Width:</p>
-        <input type="text" v-model="width">
+        <!-- First conveniently proxies (represents) this push method here because
+             the push method does not create a new array, it just adds itens to the existent one
+             and that its a bit harder to track since the object itself (the array)
+             doesnt change here cause its a reference type and the pointer to the type
+             hasent changed, only the value in memory but for that to realize you have to
+             watch this value in memory which Vue.js does for us automatically -->
+        <button @click="ingredients.push('something!')">Add some ingredient!</button>
       </div>
+
+      <p>Template v-for</p>
+      <template v-for="(ingredient, i) in ingredients">
+        <h3>{{ ingredient }}</h3>
+        <p>{{ i }}</p>
+      </template>
+
+      <p>Looping through properties</p>
+      <ul>
+        <li v-for="person in persons">
+          <div v-for="(value, key, i) in person"> {{ key }}: {{ value }} ({{ i }})</div>
+        </li>
+      </ul>
+
+      <p>Looping through numbers (n in 10)</p>
+      <span v-for="n in 10">{{ n }} -> </span>
+    </div>
 
   </div>
 
@@ -126,6 +191,12 @@
     new Vue({
       el: '#app',
       data: {
+        ingredients: ['meat', 'fruit', 'cookies'],
+        persons: [
+          { name: 'Max', age: 27, color: 'red' },
+          { name: 'Anna', age: 'unknown', color: 'blue' }
+        ],
+        show: false,
         name: "Igor",
         event: "No events triggered yet.",
         counter: 0,
