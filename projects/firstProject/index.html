@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>First Project</title>
+
+  <script src="../../vue.js"></script>
+  <link href="https://fonts.googleapis.com/css?family=Open+Sans" rel="stylesheet">
+</head>
+
+<body>
+
+  <div id="firstProject">
+
+    <div class="game centered">
+      <div class="row centered">
+        <div class="scoreboard">
+          <h1>YOU</h1>
+          <div>
+            <p class="life-bar" :style="{ width: player.life + 'px' }">{{ playersLife }}</p>
+          </div>
+        </div>
+
+        <div class="scoreboard">
+          <h1>MONSTER</h1>
+          <div>
+            <p class="life-bar" :style="{ width: monster.life + 'px' }">{{ monstersLife }}</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="menu cool-border row centered" v-if="!gameStarted">
+        <button class="cool-border lime" @click="startGame">
+          Start New Game
+        </button>
+      </div>
+      <div v-else class="menu cool-border row centered">
+        <button class="cool-border red" @click="fight">Attack</button>
+        <button class="cool-border green" @click="specialAttack">Special Attack</button>
+        <button class="cool-border lime" @click="heal">Heal</button>
+        <button class="cool-border white" @click="resetGame">Give Up</button>
+      </div>
+      <div class="actions cool-border" v-if="actions.length > 0">
+        <div class="action" v-for="action in actions" :class="{ monster: action.monster, player: action.player }">
+          {{ action.message }}
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    new Vue({
+      el: '#firstProject',
+      data: {
+        gameStarted: false,
+        player: {
+          life: 200
+        },
+        monster: {
+          life: 200
+        },
+        actions: [],
+        messages: {
+          monster: hit => ({ player: true, monster: false, message: `PLAYER HITS MONSTER FOR ${hit}` }),
+          player: hit => ({ player: false, monster: true, message: `MONSTER HITS PLAYER FOR ${hit}` }),
+          heal: amount => ({ player: true, monster: false, message: `PLAYER HEALS HIMSELF FOR ${amount}` })
+        },
+        damages: {
+          regular: 5,
+          special: 40
+        }
+      },
+      computed: {
+        playersLife() {
+          return this.player.life / 2;
+        },
+        monstersLife() {
+          return this.monster.life / 2;
+        }
+      },
+      methods: {
+        checkVictory() {
+          if (this.player.life < 1) {
+            alert('You lose!');
+            this.startGame();
+          } else if (this.monster.life < 1) {
+            alert('You won!');
+            this.startGame();
+          }
+        },
+        resetGame() {
+          this.gameStarted = false;
+          this.player.life = 200;
+          this.monster.life = 200;
+          this.actions = [];
+        },
+        startGame() {
+          this.gameStarted = true;
+        },
+        specialAttack() {
+          this.attack('monster', this.damages.special);
+          this.attack('player', this.damages.regular);
+        },
+        fight() {
+          this.attack('monster', this.damages.regular);
+          this.attack('player', this.damages.regular);
+        },
+        attack(who, damage) {
+          let hit = this.random(damage);
+          this[who].life -= hit;
+          this.actions.unshift(this.messages[who](hit));
+          this.checkVictory();
+        },
+        heal() {
+          let amount = this.random(10);
+          if (this.playersLife + amount <= 100) {
+            this.player.life += amount;
+            this.actions.unshift(this.messages.heal(amount));
+            this.attack('player', this.damages.regular);
+          } else {
+            this.player.life = 200;
+          }
+        },
+        random(max) {
+          return Math.floor(Math.random() * Math.floor(max));
+        }
+      }
+    });
+  </script>
+
+  <style>
+    * {
+      text-align: center;
+      font-family: 'Open Sans', sans-serif;
+    }
+
+    button {
+      font-size: 15px;
+      margin: 5px;
+      padding: 10px;
+      border-radius: 5px;
+    }
+
+    .game {
+      flex-direction: column;
+    }
+
+    .centered {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .row {
+      display: flex;
+      flex-direction: row;
+    }
+
+    .scoreboard {
+      height: 100px;
+      width: 200px;
+      margin: 50px;
+    }
+
+    .action {
+      padding: 5px;
+      margin: 5px;
+      color: white;
+    }
+
+    .cool-border {
+      box-shadow: 1px 1px 9px 2px rgba(163, 163, 163, 0.73);
+    }
+
+    .menu {
+      width: 500px;
+      padding: 20px;
+    }
+
+    .scoreboard div {
+      background-color: gray;
+    }
+
+    .player {
+      background-color: blue;
+    }
+
+    .monster, .cool-border.red {
+      background-color: red;
+    }
+
+    .cool-border.green {
+      background-color: green;
+    }
+
+    .cool-border.white {
+      background-color: white;
+    }
+
+    .cool-border.lime {
+      background-color: lime;
+    }
+
+    .actions {
+      padding: 20px;
+      width: 500px;
+      margin-top: 20px;
+    }
+
+    .life-bar {
+      padding: 5px;
+      height: 20px;
+      color: white;
+      background-color: green;
+    }
+  </style>
+
+</body>
+
+</html>
