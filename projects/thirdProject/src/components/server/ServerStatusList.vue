@@ -7,6 +7,7 @@
                             :id="index"
                             :status="server.status"
                             v-on:click.native="loadDetails(index)" />
+                            <!-- Pass :server="server" if you prefer to use bus -->
                             <!-- If you pass status instead of :status
                                  it would be a static prop, its a prop
                                  to pass 'direct content' like status="Normal" -->
@@ -19,6 +20,9 @@
 <script>
 import ServerDetails from "./ServerDetails.vue";
 import ServerStatusItem from "./ServerStatusItem.vue";
+
+/* If you prefer to use bus instead of events
+import { serverBus } from "../../main.js"; */
 
 export default {
   components: {

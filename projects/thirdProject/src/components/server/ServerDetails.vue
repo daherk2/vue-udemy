@@ -10,8 +10,27 @@
 </template>
 
 <script>
+  /* If you prefer to use bus instead of events
+  import { serverBus } from "../../main.js"; */
+
   export default {
-    props: ["server", "onClick"]
+    props: ["server", "onClick"],
+    /* If you prefer to use bus instead of events
+    data() {
+      return {
+        server: {}
+      }
+    },
+    created() {
+      serverBus.$on('server-selected', server => {
+        this.server = server;
+      });
+    },
+    methods: {
+      resetStatus() {
+        this.server.status = "Normal"; // Object is a reference type (its not a copy)!
+      }
+    } */
   }
 </script>
 
