@@ -1,3 +1,0 @@
-<template>
-    <server-status />
-</template>
